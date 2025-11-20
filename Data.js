@@ -1,5 +1,6 @@
 var s2Tools = require("users/leikuny101/TOOLBOX:s2Tools");
-var roi = ee.FeatureCollection('users/2401221040/IOWA_Adair');//在这里输入县尺度的边界shp GEE资产路径
+var roi = ee.FeatureCollection('users/2401221040/IOWA_Adair');// Input GEE Asset path for the county-level boundary shp here
+function HS2SR_CS(image) {
 function HS2SR_CS(image) {
   var cloudProb = image.select('MSK_CLDPRB');
   var snowProb = image.select('MSK_SNWPRB');
@@ -53,7 +54,7 @@ function getAdditionalVariables(date, roi) {
 function processYear(year) {
   var startDate = ee.Date(year + '-05-01');
   var endDate = ee.Date(year + '-08-31');
-  var maskImage = ee.Image('users/2401221040/IOWA' + year).eq(5); //记得修改tif文件名（州名）
+  var maskImage = ee.Image('users/2401221040/IOWA' + year).eq(5); // Remember to change the tif filename (State name)
   var timePoints = ee.List.sequence(0, endDate.difference(startDate, 'days'), 5).map(function(day) {
     return startDate.advance(day, 'days');
   });
@@ -86,10 +87,11 @@ function processYear(year) {
   var resultsCollection = ee.FeatureCollection(aggregatedData);
   Export.table.toDrive({
     collection: resultsCollection,
-    description: 'IOWA_Adair' + year,//这里改成州_县名
+    description: 'IOWA_Adair' + year,// Changed to State_County_Year
     fileFormat: 'CSV'
   });
 }
 for (var year = 2019; year <= 2023; year++) {
   processYear(year);
+
 }
